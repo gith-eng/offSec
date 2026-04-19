@@ -1,1 +1,32 @@
+00_pastry_shop:
+  Canary enabled, no PIE, NX enabled.
+  Program reads and prints a name that gets checked for lenght but is not printed as %s, so it can be used to read the stack and get the canary. 
+  Then reads 256B into 64B buf. 
 
+01_fortune_cookie:
+  Canary enabled, no PIE, NX enabled.
+  Program reads 256B into 64B buffer, then prints OK (can be used to brute force the canary, will print ok only if canary value was guessed right).
+
+02_space_station:
+  Canary enabled, PIE enabled, NX enabled.
+  We can use the first input to print stack values and leak both the canary and a PIE address.
+  Then we use the vmmap base address and the leaked PIE address to get the PIE offset.
+  We use cyclic input to get canary offset and RIP offset and we start the exploit (ret address and win address will need the offet added to them)
+
+03_secret_library:
+  Canary enabled, no PIE, NX enabled.
+  We can use the first input to leak the canary position and then the canary value.
+  Then we start to exploit.
+
+04_cafe_menu:
+  Canary enabled, no PIE, NX enabled.
+  We can skip the canary by overwriting the struct index in order to write into RIP and not into the table.
+  We need to fill the table (48B padding), then write the RIP address into struct index (RIP address is 71, found by trying all numbers starting from 68).
+  Then write the win function address.
+  The program will write the win function address into the RIP address.
+
+05_weather_station:
+  Canary enabled, no PIE, NX enabled.
+  Brute forced everything. Canary offset by sending a number of "a" until canary breaks.
+  Canary value with lab code.
+  RIP offset by sending a number of win function addresses until it works.

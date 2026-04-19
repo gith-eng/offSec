@@ -10,7 +10,7 @@ p = process(elf.path)
 
 gdb.attach(p, gdbscript="continue")
 
-#tried all possible values and 71 (0x47 worked)
+#tried all possible values starting from 68 (48B table + 4B index + 8B canary + 8B saved RPB), and 71 (0x47 worked)
 RIP_OFFSET = 71
 MENU_LENGTH = 48
 

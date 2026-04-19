@@ -5,8 +5,8 @@ context.binary = elf = ELF('./lemonade_stand', checksec=False)
 
 p = process(elf.path)
 
-# Your exploit here
-
+#python3 -c "from pwn import *; print(cyclic(200))
+#program prints price, so we can use cyclic to find price offset
 OFFSET = 76
 
 p = remote("offsec.m0lecon.it", 13504)

@@ -1,0 +1,9 @@
+01_whisperign_wall:
+  No canary, no PIE, NX enabled.
+  Program reads unlinited input into 16B buffer.
+  We can find RIP offset and overwrite it with win address.
+
+02_canary_callback:
+  Canary enabled, no PIE, NX enabled.
+  Program reads 128B into 64B buffer, overflowing into cast pointer.
+  Then calls spell.cast, we don't need to touch the canary, we just need to overwrite cast pointer with win address.

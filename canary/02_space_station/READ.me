@@ -1,0 +1,5 @@
+per trovare canary solito modo da formatted string del primo input.
+Per trovare OFFset prima ho usato la format string per stampare tanti %p. Quello con 0x55555555.. era un PIE address.
+Poi usando vmmap ho trovate il base address e sottraendo il pie address ho avuto l'offset, che resta sempre uguale.
+Poi usato questi dati per leakare canary e indirizzo (a cui sottrarre offset per trovare base address di quella run.
+Usati nel payload.)

@@ -1,0 +1,40 @@
+Mission_control:
+	Open web page and use burpsuite as proxy. When clicking on the classified briefing one of the request headers is "X-Clearence-level". We can modify it to commander and read the birefing.
+
+Al_dente:
+	Open web page and register. Using burpsuite edit profile and add to the body "role": "head_chef". Then open the secret recipe.
+
+Ticket_vault:
+	Open wb page and register. Go to my ticket and using burpsuite click on one. Then modify the request to be GET /api/tickets/1 HTTP/2 to get the secret.
+
+Lab_results:
+	Open web page and register. Click on view report of one of the tickets and with burpsuite modify the request to GET /results/1 HTTP/2 to get the secret.
+
+Swag_shop:
+	We can put the 1000$ item in the cart and then remove it multiple times. We can remove it 10 times and then add the VIP item once and purchase. We get access to VIP lounge and secret.
+
+Flag_mail:
+	Open web page, reigster and try to read mail. The GET will have "Bearer: XXXXXXXXX002". 
+	To get the admin message we need to GET /api/messages/1 HTTP/2. Bearer will end in 001 and the previous number will change depending on the time difference in the creation of the two accounts.
+	We can send it to the intruder and look at about 150 numbers to find the admin one.
+
+
+Key_vault:
+	The token is a JSON web token, which has three encoded parts: header.payload.signature. 
+	The decoded payload is {
+ 				 "sub": "test1",
+ 				 "user_id": 4,
+  				"role": "user",
+  				"iat": 1781557664,
+  				"exp": 1781561264
+				}
+	We need to use either ngrok or JSON web token on burpsuite (???)
+
+Neon_arcade:
+	We have again a JSON web token, we can use ngrok (???)
+
+Cookie_monster_army:
+	When we register and then login on the website we get an encoded session cookie that decodes to 2026/06/16-1781635116-<username>.
+	If we chnge username to admin and use the new encoded cookie, our homepage will contain the flag.
+
+A_too_small_reminder:

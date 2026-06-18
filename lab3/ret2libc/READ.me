@@ -1,0 +1,20 @@
+feedback_portal: 
+	No canary, NX enabeld, no PIE --> can jump to a PLT stub (stable if PIE is disabled) to call a function directly.
+	There is no pop rdi; ret in the binary, but i can leak sone values from stack with my first input. Any value starting with 0x7ffd...is stack, any value starting with 0x7f... is libc.
+	You don’t just need a libc address — you need a recognizable one. 0x7f48138e78a9 is a good leak, because it is inside a known function __libc_start_main+243.
+	On remote and on local the sstack position with the good leak changes!! It was %6$lx on local, but when trying it on remote that returned 0, while %9$lx returned a good leak.
+	ONce I had the good leak position, I used gbd, gave %6$lx (because on local), got the value and did info symbol <leak> to get the function of libc.6.so the leak was from.
+	Then p <function> and info proc mappings to get the base address. With leak and base address I could calculate the offset.
+	Then I needed to find ret gadget (with ROP as usual), pop rdi; ret, /bin/sh and system address (from library.)
+
+crystal_ball:
+	No canary, NX enabled, no PIE. Attack happens in two steps: first we print a leak from the library and rerun the program, then we use the leak to get addresses of /bin/sh and system.
+	In the first step we need to do padding
+		+ pop_rdi_ret (we have the function in main)
+		+ puts@got (prints the real libc address of puts, )
+		+ puts@plt (puts@plt is what the program normally uses to call puts)
+		+ main (or vuln)
+	What this does is putting the real address of puts as n argument, and then printing it.
+
+digital_postcard_writer: 
+	Same exact source code as crystal_ball except for the use of printf instead of gets. Very similar solve, just for some reason on local it only worked if I used libc.so.6 in usr, while remotely it worked the normal way.

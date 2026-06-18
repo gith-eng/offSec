@@ -1,0 +1,11 @@
+aquabank_ATM: 
+	vulnerability in withdrawal memo (256B in 64B buffer). 
+
+aquabank_safe:
+	diagnostics() function prints the address of printf and itself (can be used as a leak to get libc base address and PIE base address). 
+	opensafe() function has a buffer overflow, but only reads 24B into 8B buffer. It cannot be used to write the whole ROP chain because that would be longer than 24B. 
+	deposit() function allows us to write on a global buffer. We can use it to write the binsh string and then the ROP chain.
+	Before the RIP offset we put the global buffer address, at the RIP offset we put the leave; ret gadget. 
+	What eave does is that rsp points to the buffer address, and pops the first value into rpb (not useful, we don't care), then execution continues from the global buffer.
+	NX is not a problem because we didn't execute the global buffer, it didn't contain shellcode bytes. It just contained addresses and we jumped to those addresses.	
+

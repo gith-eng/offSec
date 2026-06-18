@@ -1,0 +1,28 @@
+GitPeak: 
+	Some characters are prohibited, but $ is allowed, and gives this error:fatal: ambiguous argument '$': unknown revision or path not in the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]
+	If I use $FLAG instead, it still gives an error, but still prints the ambiguous argument: fatal: ambiguous argument 'offsec{g1t_p33k_cmd_sub_XnCL9upyEcKMGrOr}': unknown revision or path not in the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]
+
+
+QRDrop:
+	When you insert a valid URL the app produces a QRcodeand outputs it into outputPath. 
+	outputPath is tmp/qrcodes/${uuidv4()}.png, and we can discover {uuidv4()}.png by trying to save the image of the QRcode (the suggested name is ${uuidv4()}.png)).
+	Then we can put as input '; cp /flag.txt tmp.qrcodes/${uuidv4()}.png' and the QRcode image will be substituted by the flag.
+	We can then print the flag by going to /qr/:filename and using as filename ${uuidv4()}.png. But we cannot see the image normally, since it is considered broken. 
+	We can see the raw data by doing curl -i https://...
+
+
+SpreadSheetZero:
+	If I try to use = $FLAG I get invalid syntax error, so it seems it is interpreting my input as code. 
+	This code __import__("os").environ["FLAG"] reads the environment variable from the operating system.
+
+
+AutoGrader: 
+	I can use print(globals()) that is not blocked and prints the global variables and functions. 
+	That prints __loader__': <_frozen_importlib_external.SourceFileLoader object at 0x7fac9fd26850>, this is th eloader object. 
+	print(dir(globals()['__loader__'])) prints all the attribute and methods of the object. One of them is get_data.
+	I can print globals()['__loader__'].get_data('/flag.txt'). This calls the get_data method of the loader object, reads the file and returns the contend as raw bytes. That is the flag.
+

@@ -1,0 +1,21 @@
+Toolkit: 
+	With cyclic input offset to RIP is 72. 
+	Then like lab says (just copy the code)
+
+
+Forge:
+	Copied lab code, just had to get RIP offset usual way, then lea rax, obj.shellcode ; 0x404080 in the r2 told me where my shellcode was going and arguments for mprotect were page, 0x1000 and 7.
+
+
+Chain_reactor:
+	We wnat to put 0xc0ffee in arg1 (RDI) and 0xbadc0de in arg2(RSI), then call sym.win. RIP offset found the same way, then all other gadgets found with ROP.
+
+
+Arsenal: 
+	objdump -d ./arsenal | grep -B2 "ret" | grep -A1 "syscall"
+	This is a two-stage pipe to find syscall instructions that are near a ret:
+
+		objdump -d disassembles the whole binary
+		grep -B2 "ret" keeps every line containing ret, plus the 2 lines before it (-B2 = before)
+		grep -A1 "syscall" from those results, keeps every line containing syscall plus the 1 line after it (-A1 = after
+

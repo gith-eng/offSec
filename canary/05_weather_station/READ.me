@@ -1,0 +1,7 @@
+Ho trovato con brute force tutto: 
+	-canary offset: con un ciclo for che mandava un numero crescente di "a" fino a rompere il canary e poi usava il counter come canary offset
+	-canary value: come nell'esempio del laboratorio, ricavando un byte alla volta
+	-rip offset: mandando il valore di sym.win prima 1, poi 2, ecc volte, stoppando il ciclo quando si apre la shell
+
+La shell che si apre si chiude immediatamente, quindi nello stesso exploit primadi interactive ho mandato il comando io.sendline(b"/bin/sh -i") che apre una shell interattiva.
+Questa shell non si chiude subito e hho esplorato un po' le directories per trovare la flag.

@@ -1,0 +1,9 @@
+Per trovare l'offset del canary metto break su read_data, mando cyclic 100B e vado avanti di ni fino a quanto non cocmpare parte del cyclic nel check (canary).
+L'offset del RIP e' offset canary + canary(8B) + RSB (8B).
+Poi ho usato il codice del lab modificato per trovare brute force il canary. una volta trovato pero' scattava subito l'eof. 
+Ho aperto una nuova connessione usando il canary trovato (resta lo stesso) ma avevo tempo di inserire un solo comando prima che si chiudesse.
+Ho fatto cat ./home/user/flag.
+
+
+
+

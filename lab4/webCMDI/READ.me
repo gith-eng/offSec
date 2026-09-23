@@ -1,14 +1,11 @@
 GitPeak: 
 	Some characters are prohibited, but $ is allowed, and gives this error:fatal: ambiguous argument '$': unknown revision or path not in the working tree.
-Use '--' to separate paths from revisions, like this:
-'git <command> [<revision>...] -- [<file>...]
 	If I use $FLAG instead, it still gives an error, but still prints the ambiguous argument: fatal: ambiguous argument 'offsec{g1t_p33k_cmd_sub_XnCL9upyEcKMGrOr}': unknown revision or path not in the working tree.
-Use '--' to separate paths from revisions, like this:
-'git <command> [<revision>...] -- [<file>...]
+
 
 
 QRDrop:
-	When you insert a valid URL the app produces a QRcodeand outputs it into outputPath. 
+	When you insert a valid URL the app produces a QRcode and outputs it into outputPath. 
 	outputPath is tmp/qrcodes/${uuidv4()}.png, and we can discover {uuidv4()}.png by trying to save the image of the QRcode (the suggested name is ${uuidv4()}.png)).
 	Then we can put as input '; cp /flag.txt tmp.qrcodes/${uuidv4()}.png' and the QRcode image will be substituted by the flag.
 	We can then print the flag by going to /qr/:filename and using as filename ${uuidv4()}.png. But we cannot see the image normally, since it is considered broken. 

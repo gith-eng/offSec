@@ -1,4 +1,5 @@
 import requests
+#brute force of the admin cookie/session_id
 
 URL= "http://too-small-reminder.challs.olicyber.it/admin"
 
